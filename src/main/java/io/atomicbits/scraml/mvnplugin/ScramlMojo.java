@@ -43,13 +43,8 @@ import java.util.Map;
 @Mojo(name = "scraml")
 public class ScramlMojo extends AbstractMojo {
 
-    /**
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     * @since 1.0
-     */
-    MavenProject project;
+    @Parameter(defaultValue="${project}", readonly=true, required=true)
+    private MavenProject project;
 
     /**
      * Scraml file pointer to the RAML specification main file.
@@ -58,10 +53,16 @@ public class ScramlMojo extends AbstractMojo {
     private String ramlApi;
 
     /**
+     * Scraml base directory to find the RAML files.
+     */
+    @Parameter(property = "scraml.resourceDirectory", defaultValue = "src/main/resources")
+    private String resourceDirectory;
+
+    /**
      * Scraml client source generation output directory.
      */
     @Parameter(property = "scraml.outputDirectory", defaultValue = "target/generated-sources/scraml")
-    private File outputDirectory;
+    private String outputDirectory;
 
 
     @Override
@@ -70,7 +71,7 @@ public class ScramlMojo extends AbstractMojo {
         if (!ramlApi.isEmpty()) {
 
             File baseDir = project.getBasedir();
-            File ramlBaseDir = new File(baseDir, "src/main/resources");
+            File ramlBaseDir = new File(baseDir, resourceDirectory);
             File ramlSource = new File(ramlBaseDir, ramlApi);
 
             String[] apiPackageAndClass = packageAndClassFromRamlPointer(ramlApi);
@@ -79,19 +80,20 @@ public class ScramlMojo extends AbstractMojo {
 
             Map<String, String> generatedFiles;
             try {
-                generatedFiles = ScramlGenerator.generate(ramlSource.toURI().toURL().toString(), apiPackageName, apiClassName);
+                generatedFiles = ScramlGenerator.generateJavaCode(ramlSource.toURI().toURL().toString(), apiPackageName, apiClassName);
             } catch (MalformedURLException | NullPointerException e) {
                 feedbackOnException(ramlBaseDir, ramlApi, ramlSource);
                 throw new RuntimeException("Could not generate RAML client.", e);
             }
 
-            outputDirectory.mkdirs();
+            File outputDirAsFile = new File(outputDirectory);
+            outputDirAsFile.mkdirs();
 
             try {
                 for (Map.Entry<String, String> entry : generatedFiles.entrySet()) {
                     String filePath = entry.getKey();
                     String content = entry.getValue();
-                    File fileInDst = new File(outputDirectory, filePath);
+                    File fileInDst = new File(outputDirAsFile, filePath);
                     fileInDst.getParentFile().mkdirs();
                     FileWriter writer = new FileWriter(fileInDst);
                     writer.write(content);
@@ -101,6 +103,8 @@ public class ScramlMojo extends AbstractMojo {
                 e.printStackTrace();
                 throw new RuntimeException("Could not generate RAML client.", e);
             }
+
+            project.addCompileSourceRoot(outputDirectory);
         }
 
     }
@@ -182,7 +186,7 @@ public class ScramlMojo extends AbstractMojo {
         return emptied;
     }
 
-    
+
     private void feedbackOnException(File ramlBaseDir,
                                      String ramlPointer,
                                      File ramlSource) {
