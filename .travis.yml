@@ -6,7 +6,10 @@ notifications:
     recipients:
     - peter.rigole@atomicbits.io
 after_success:
-- '[[ $TRAVIS_BRANCH == "develop" ]] && { mvn deploy ; };'
+- echo "<settings><servers><server><id>ossrh</id><username>\${env.SONATYPE_USERNAME}</username><password>\${env.SONATYPE_PASSWORD}</password></server></servers></settings>" > ~/settings.xml
+- mvn deploy --settings ~/settings.xml
+- '[[ $TRAVIS_BRANCH == "develop" ]] && { mvn deploy --settings ~/settings.xml ; };'
+
 env:
   global:
   - secure: VpmXM47xG1A5Wc6T376t4f2DSur0eFhUmD8moDz9G3wbUhTl1+jcql88oO/CCdMj9X2gYAyiyA1OJ4/nUzDNXmnk/XwpCjgIRpJoZVlynSHmcvKes5Y+o7hfmHa8Zbty91uCBlFbrDBvI3Tx5pyfjwgZU+gaa3qE4vL2Fw5xKIueONVvNgReHkSFu+/hk8G/E6FsBtrIfnwxRFTecBFc5I6tqMlbykdUbNkoSMNH5M0hfaDn6R8CfjKwOlLFZrwDbTn6c+AOjY6jJLGLZswcl2eWNFJoQpr7gFuyNPx2EgFux6OTnQZ8a22z28idTnRwiRmEJUM8sQlvj+KkyTKzEXFJv2ojVQo4kqtklXlRvF4cXt6XNgmiAYG4V3R6hIIRnIxuob/P94RsnTCF7Y0XO0Gzac4JCTrgZdiOYUmmn8QX/SBUT2xI1ObephZhWNOfYonbymvahgkBoCgsv6ncXGAEJvoKISOCw6EErDJjaawoyVG/cpdW7ufbGFFylhhlowTrxh2zCvhT4ygcuBFKSp/nFB5+Pe070zFSv6mfYxu+k13fpCIExJhcUYHyJbRhM6YlxGgG902L2CEhhT4Ms2aznS4v+eSRYjWrKd07rWfgF5kQaP1flp5AnVXPC/ceIjEXpWy0sK+WKSsdjZ1vhg7I0RISlezwH4ZlIvQxbAg=
