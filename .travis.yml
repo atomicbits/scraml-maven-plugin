@@ -7,7 +7,6 @@ notifications:
     - peter.rigole@atomicbits.io
 after_success:
 - echo "<settings><servers><server><id>ossrh</id><username>\${env.SONATYPE_USERNAME}</username><password>\${env.SONATYPE_PASSWORD}</password></server></servers></settings>" > ~/settings.xml
-- mvn deploy --settings ~/settings.xml
 - '[[ $TRAVIS_BRANCH == "develop" ]] && { mvn deploy --settings ~/settings.xml ; };'
 
 env:
