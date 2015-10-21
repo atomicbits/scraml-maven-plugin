@@ -70,9 +70,17 @@ public class ScramlMojo extends AbstractMojo {
 
         if (!ramlApi.isEmpty()) {
 
-            File baseDir = project.getBasedir();
-            File ramlBaseDir = new File(baseDir, resourceDirectory);
-            File ramlSource = new File(ramlBaseDir, ramlApi);
+            File ramlBaseDir;
+            File ramlSource;
+
+            if(resourceDirectory.startsWith("/")) {
+                ramlBaseDir = new File(resourceDirectory);
+                ramlSource = new File(ramlBaseDir, ramlApi);
+            } else {
+                File baseDir = project.getBasedir();
+                ramlBaseDir = new File(baseDir, resourceDirectory);
+                ramlSource = new File(ramlBaseDir, ramlApi);
+            }
 
             String[] apiPackageAndClass = packageAndClassFromRamlPointer(ramlApi);
             String apiPackageName = apiPackageAndClass[0];
