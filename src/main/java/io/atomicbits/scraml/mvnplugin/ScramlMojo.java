@@ -72,13 +72,11 @@ public class ScramlMojo extends AbstractMojo {
 
             File ramlBaseDir;
             File ramlSource;
-
             if(resourceDirectory.startsWith("/")) {
                 ramlBaseDir = new File(resourceDirectory);
                 ramlSource = new File(ramlBaseDir, ramlApi);
             } else {
-                File baseDir = project.getBasedir();
-                ramlBaseDir = new File(baseDir, resourceDirectory);
+                ramlBaseDir = new File(project.getBasedir(), resourceDirectory);
                 ramlSource = new File(ramlBaseDir, ramlApi);
             }
 
@@ -94,7 +92,12 @@ public class ScramlMojo extends AbstractMojo {
                 throw new RuntimeException("Could not generate RAML client.", e);
             }
 
-            File outputDirAsFile = new File(outputDirectory);
+            File outputDirAsFile;
+            if(outputDirectory.startsWith("/")) {
+                outputDirAsFile = new File(outputDirectory);
+            } else {
+                outputDirAsFile = new File(project.getBasedir(), outputDirectory);
+            }
             outputDirAsFile.mkdirs();
 
             try {
