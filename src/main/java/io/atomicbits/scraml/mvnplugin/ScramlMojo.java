@@ -72,7 +72,7 @@ public class ScramlMojo extends AbstractMojo {
 
             File ramlBaseDir;
             File ramlSource;
-            if(resourceDirectory.startsWith("/")) {
+            if(resourceDirectory.startsWith("/") || resourceDirectory.contains(":\\") || resourceDirectory.contains(":/")) {
                 ramlBaseDir = new File(resourceDirectory);
                 ramlSource = new File(ramlBaseDir, ramlApi);
             } else {
