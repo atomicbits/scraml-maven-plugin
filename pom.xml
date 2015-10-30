@@ -83,7 +83,7 @@
         <dependency>
             <groupId>io.atomicbits</groupId>
             <artifactId>scraml-generator_${scala.deps.version}</artifactId>
-            <version>0.3.5-SNAPSHOT</version>
+            <version>0.3.6-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <repositories>
