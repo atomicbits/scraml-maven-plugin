@@ -43,7 +43,7 @@ import java.util.Map;
 @Mojo(name = "scraml")
 public class ScramlMojo extends AbstractMojo {
 
-    @Parameter(defaultValue="${project}", readonly=true, required=true)
+    @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;
 
     /**
@@ -51,6 +51,13 @@ public class ScramlMojo extends AbstractMojo {
      */
     @Parameter(property = "scraml.ramlApi", defaultValue = "")
     private String ramlApi;
+
+    /**
+     * Scraml package name for the api client class and all its resources. Default is empty, then the name will be deduced from the
+     * relative location of the main RAML file.
+     */
+    @Parameter(property = "scraml.apiPackage", defaultValue = "")
+    private String apiPackage;
 
     /**
      * Scraml base directory to find the RAML files.
@@ -72,7 +79,7 @@ public class ScramlMojo extends AbstractMojo {
 
             File ramlBaseDir;
             File ramlSource;
-            if(resourceDirectory.startsWith("/") || resourceDirectory.contains(":\\") || resourceDirectory.contains(":/")) {
+            if (resourceDirectory.startsWith("/") || resourceDirectory.contains(":\\") || resourceDirectory.contains(":/")) {
                 ramlBaseDir = new File(resourceDirectory);
                 ramlSource = new File(ramlBaseDir, ramlApi);
             } else {
@@ -80,7 +87,7 @@ public class ScramlMojo extends AbstractMojo {
                 ramlSource = new File(ramlBaseDir, ramlApi);
             }
 
-            String[] apiPackageAndClass = packageAndClassFromRamlPointer(ramlApi);
+            String[] apiPackageAndClass = packageAndClassFromRamlPointer(ramlApi, apiPackage);
             String apiPackageName = apiPackageAndClass[0];
             String apiClassName = apiPackageAndClass[1];
 
@@ -93,7 +100,7 @@ public class ScramlMojo extends AbstractMojo {
             }
 
             File outputDirAsFile;
-            if(outputDirectory.startsWith("/")) {
+            if (outputDirectory.startsWith("/")) {
                 outputDirAsFile = new File(outputDirectory);
             } else {
                 outputDirAsFile = new File(project.getBasedir(), outputDirectory);
@@ -126,15 +133,24 @@ public class ScramlMojo extends AbstractMojo {
     }
 
 
-    private String[] packageAndClassFromRamlPointer(String pointer) {
+    private String[] packageAndClassFromRamlPointer(String pointer, String apiPackageName) {
         String[] parts = pointer.split(escape('/'));
         if (parts.length == 1) {
-            return new String[]{"io.atomicbits", cleanFileName(parts[0])};
+            String packageName;
+            if (apiPackageName.isEmpty())
+                packageName = "io.atomicbits";
+            else
+                packageName = apiPackageName;
+            return new String[]{packageName, cleanFileName(parts[0])};
         } else {
             String className = cleanFileName(parts[parts.length - 1]);
             List<String> firstParts = Arrays.asList(parts).subList(0, parts.length - 1); // toIndex is exclusive
-            String packageParts = ListUtils.mkString(firstParts, ".");
-            return new String[]{packageParts, className};
+            String packageName;
+            if (apiPackageName.isEmpty())
+                packageName = ListUtils.mkString(firstParts, ".");
+            else
+                packageName = apiPackageName;
+            return new String[]{packageName, className};
         }
     }
 

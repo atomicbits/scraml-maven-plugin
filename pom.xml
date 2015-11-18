@@ -67,6 +67,11 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>io.atomicbits</groupId>
+            <artifactId>scraml-generator_${scala.deps.version}</artifactId>
+            <version>0.4.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
             <version>3.3.3</version>
@@ -87,11 +92,6 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-toolchain</artifactId>
             <version>2.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>io.atomicbits</groupId>
-            <artifactId>scraml-generator_${scala.deps.version}</artifactId>
-            <version>0.4.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <repositories>
