@@ -21,6 +21,7 @@ package io.atomicbits.scraml.mvnplugin;
 
 import io.atomicbits.scraml.generator.ScramlGenerator;
 import io.atomicbits.scraml.mvnplugin.util.ListUtils;
+import io.atomicbits.scraml.mvnplugin.util.StringUtil;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -137,7 +138,7 @@ public class ScramlMojo extends AbstractMojo {
         String[] parts = pointer.split(escape('/'));
         if (parts.length == 1) {
             String packageName;
-            if (apiPackageName.isEmpty())
+            if (StringUtil.isNullOrEmpty(apiPackageName))
                 packageName = "io.atomicbits";
             else
                 packageName = apiPackageName;
@@ -146,7 +147,7 @@ public class ScramlMojo extends AbstractMojo {
             String className = cleanFileName(parts[parts.length - 1]);
             List<String> firstParts = Arrays.asList(parts).subList(0, parts.length - 1); // toIndex is exclusive
             String packageName;
-            if (apiPackageName.isEmpty())
+            if (StringUtil.isNullOrEmpty(apiPackageName))
                 packageName = ListUtils.mkString(firstParts, ".");
             else
                 packageName = apiPackageName;
