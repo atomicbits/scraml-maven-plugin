@@ -72,6 +72,18 @@ public class ScramlMojo extends AbstractMojo {
     @Parameter(property = "scraml.outputDirectory", defaultValue = "target/generated-sources/scraml")
     private String outputDirectory;
 
+    /**
+     * Scraml license key.
+     */
+    @Parameter(property = "scraml.licenseKey", defaultValue = "")
+    private String licenseKey;
+
+    /**
+     * Scraml class header.
+     */
+    @Parameter(property = "scraml.classHeader", defaultValue = "")
+    private String classHeader;
+
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -94,7 +106,14 @@ public class ScramlMojo extends AbstractMojo {
 
             Map<String, String> generatedFiles;
             try {
-                generatedFiles = ScramlGenerator.generateJavaCode(ramlSource.toURI().toURL().toString(), apiPackageName, apiClassName);
+                generatedFiles =
+                        ScramlGenerator.generateJavaCode(
+                                ramlSource.toURI().toURL().toString(),
+                                apiPackageName,
+                                apiClassName,
+                                licenseKey,
+                                classHeader
+                                );
             } catch (MalformedURLException | NullPointerException e) {
                 feedbackOnException(ramlBaseDir, ramlApi, ramlSource);
                 throw new RuntimeException("Could not generate RAML client.", e);
