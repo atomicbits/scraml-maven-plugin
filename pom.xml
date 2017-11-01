@@ -69,7 +69,7 @@
         <dependency>
             <groupId>io.atomicbits</groupId>
             <artifactId>scraml-generator_${scala.deps.version}</artifactId>
-            <version>0.8.0-SNAPSHOT</version> <!-- Change in 2 places! -->
+            <version>0.7.0</version> <!-- Change in 2 places! -->
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>

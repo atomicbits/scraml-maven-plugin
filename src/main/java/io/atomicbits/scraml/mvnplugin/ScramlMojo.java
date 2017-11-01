@@ -61,6 +61,27 @@ public class ScramlMojo extends AbstractMojo {
     private String apiPackage;
 
     /**
+     * The language (platform) for which code will be generated.
+     *
+     * @deprecated use the 'platform' parameter instead.
+     */
+    @Parameter(property = "scraml.language", defaultValue = "")
+    private String language;
+
+    /**
+     * The platform for which code will be generated (used to be called 'language').
+     * <p>
+     * Platforms:
+     * - JavaJackson
+     * - ScalaPlay
+     * - AndroidJavaJackson (in the pipeline)
+     * - OsxSwift (in the pipeline)
+     * - Python (in the pipeline)
+     */
+    @Parameter(property = "scraml.platform", defaultValue = "")
+    private String platform;
+
+    /**
      * Scraml base directory to find the RAML files.
      */
     @Parameter(property = "scraml.resourceDirectory", defaultValue = "src/main/resources")
@@ -92,7 +113,7 @@ public class ScramlMojo extends AbstractMojo {
 
             File ramlBaseDir;
             File ramlSource;
-            if (resourceDirectory.startsWith("/") || resourceDirectory.contains(":\\") || resourceDirectory.contains(":/")) {
+            if (isTopLevel(resourceDirectory)) {
                 ramlBaseDir = new File(resourceDirectory);
                 ramlSource = new File(ramlBaseDir, ramlApi);
             } else {
@@ -106,21 +127,32 @@ public class ScramlMojo extends AbstractMojo {
 
             Map<String, String> generatedFiles;
             try {
-                generatedFiles =
-                        ScramlGenerator.generateJavaCode(
-                                ramlSource.toURI().toURL().toString(),
-                                apiPackageName,
-                                apiClassName,
-                                licenseKey,
-                                classHeader
-                                );
+                if (Platform.SCALA_PLAY.toLowerCase().equals(getPlatform().toLowerCase())) {
+                    generatedFiles =
+                            ScramlGenerator.generateScalaCode(
+                                    ramlSource.toURI().toURL().toString(),
+                                    apiPackageName,
+                                    apiClassName,
+                                    licenseKey,
+                                    classHeader
+                            );
+                } else { // default
+                    generatedFiles =
+                            ScramlGenerator.generateJavaCode(
+                                    ramlSource.toURI().toURL().toString(),
+                                    apiPackageName,
+                                    apiClassName,
+                                    licenseKey,
+                                    classHeader
+                            );
+                }
             } catch (MalformedURLException | NullPointerException e) {
                 feedbackOnException(ramlBaseDir, ramlApi, ramlSource);
                 throw new RuntimeException("Could not generate RAML client.", e);
             }
 
             File outputDirAsFile;
-            if (outputDirectory.startsWith("/")) {
+            if (isTopLevel(outputDirectory)) {
                 outputDirAsFile = new File(outputDirectory);
             } else {
                 outputDirAsFile = new File(project.getBasedir(), outputDirectory);
@@ -147,6 +179,32 @@ public class ScramlMojo extends AbstractMojo {
 
     }
 
+    private String getPlatform() {
+        if(StringUtil.isDefined(platform)) {
+            if("scala".equals(platform.toLowerCase())) {
+                return Platform.SCALA_PLAY;
+            } else if("java".equals(platform.toLowerCase())) {
+                return Platform.JAVA_JACKSON;
+            } else {
+                return platform;
+            }
+        } else if(StringUtil.isDefined(language)) {
+            if("scala".equals(language.toLowerCase())) {
+                return Platform.SCALA_PLAY;
+            } else if("java".equals(language.toLowerCase())) {
+                return Platform.JAVA_JACKSON;
+            } else {
+                return language;
+            }
+        } else {
+            return Platform.JAVA_JACKSON;
+        }
+    }
+
+    private Boolean isTopLevel(String directory) {
+        return !StringUtil.isNullOrEmpty(directory) &&
+                (directory.startsWith("/") || directory.contains(":\\") || directory.contains(":/"));
+    }
 
     private String escape(char ch) {
         return "\\Q" + ch + "\\E";

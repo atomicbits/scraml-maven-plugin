@@ -9,4 +9,8 @@ public class StringUtil {
         return text == null || text.isEmpty();
     }
 
+    static public boolean isDefined(String text) {
+        return !isNullOrEmpty(text);
+    }
+
 }
