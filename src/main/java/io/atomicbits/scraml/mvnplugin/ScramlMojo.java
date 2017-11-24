@@ -127,25 +127,15 @@ public class ScramlMojo extends AbstractMojo {
 
             Map<String, String> generatedFiles;
             try {
-                if (Platform.SCALA_PLAY.toLowerCase().equals(getPlatform().toLowerCase())) {
-                    generatedFiles =
-                            ScramlGenerator.generateScalaCode(
-                                    ramlSource.toURI().toURL().toString(),
-                                    apiPackageName,
-                                    apiClassName,
-                                    licenseKey,
-                                    classHeader
-                            );
-                } else { // default
-                    generatedFiles =
-                            ScramlGenerator.generateJavaCode(
-                                    ramlSource.toURI().toURL().toString(),
-                                    apiPackageName,
-                                    apiClassName,
-                                    licenseKey,
-                                    classHeader
-                            );
-                }
+                generatedFiles =
+                        ScramlGenerator.generateScramlCode(
+                                getPlatform(),
+                                ramlSource.toURI().toURL().toString(),
+                                apiPackageName,
+                                apiClassName,
+                                licenseKey,
+                                classHeader
+                        );
             } catch (MalformedURLException | NullPointerException e) {
                 feedbackOnException(ramlBaseDir, ramlApi, ramlSource);
                 throw new RuntimeException("Could not generate RAML client.", e);
