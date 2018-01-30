@@ -7,7 +7,7 @@
     <groupId>io.atomicbits</groupId>
     <artifactId>scraml-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>0.8.0-M1</version>
+    <version>0.8.0-M2</version> <!-- Change in 1 place! -->
     <description>Maven pluging to generate Java clients with scraml, see http://scraml.io</description>
     <url>https://github.com/atomicbits/scraml</url>
     <licenses>
