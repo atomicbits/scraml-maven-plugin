@@ -105,6 +105,12 @@ public class ScramlMojo extends AbstractMojo {
     @Parameter(property = "scraml.classHeader", defaultValue = "")
     private String classHeader;
 
+    /**
+     * Single target source filename
+     */
+    @Parameter(property = "scraml.singleSourceFile", defaultValue = "")
+    private String singleSourceFile;
+
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -134,7 +140,8 @@ public class ScramlMojo extends AbstractMojo {
                                 apiPackageName,
                                 apiClassName,
                                 licenseKey,
-                                classHeader
+                                classHeader,
+                                singleSourceFile
                         );
             } catch (MalformedURLException | NullPointerException e) {
                 feedbackOnException(ramlBaseDir, ramlApi, ramlSource);
